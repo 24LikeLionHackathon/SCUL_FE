@@ -94,7 +94,11 @@ const InquiryPostList = ({ posts }) => {
     return (
         <ul className="inquiry-post-lists">
             {posts.map((post) => (
-                <li key={post.id} className="inquiry-post-item" onClick={() => { nav(`/inquiryPost/${post.id}`) }}>
+                <li key={post.id} className="inquiry-post-item" onClick={() => {
+                    if (post.answered && post.nickname === userName) {
+                        nav(`/inquiryPost/${post.id}`);
+                    }
+                }}>
                     <div className="inquiry-post-head">
                         <div className="inquiry-post-icon">
                             {post.nickname === userName ? <Unlock /> : <Lock />}
