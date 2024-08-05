@@ -18,7 +18,9 @@ const Auth = () => {
     if (code && storedProvider) {
       const fetchTokens = async () => {
         try {
-          const res = await axios.get(`/oauth2/${storedProvider}?code=${code}`);
+          const res = await axios.get(
+            `/api/oauth2/${storedProvider}?code=${code}`
+          );
           const { access_token, refresh_token, is_member } = res.data;
           console.log(
             res.data,
@@ -49,7 +51,15 @@ const Auth = () => {
   const handleLogin = (auth) => {
     setProvider(auth);
     localStorage.setItem('provider', auth);
-    window.location.href = `http://ec2-43-200-254-45.ap-northeast-2.compute.amazonaws.com:8080/oauth2/${auth}/redirect`;
+
+    let authUrl = '';
+    if (auth === 'kakao') {
+      authUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.REACT_APP_KAKAO_REST_API_KEY}&redirect_uri=${process.env.REACT_APP_KAKAO_REDIRECT_URL}&response_type=code`;
+    } else if (auth === 'google') {
+      authUrl = `https://accounts.google.com/o/oauth2/v2/auth?scope=email%20openid&response_type=code&redirect_uri=${process.env.REACT_APP_GOOGLE_REDIRECT_URL}&client_id=${process.env.REACT_APP_GOOGLE_CLIENT_ID}`;
+    }
+
+    window.location.href = authUrl;
   };
 
   return (

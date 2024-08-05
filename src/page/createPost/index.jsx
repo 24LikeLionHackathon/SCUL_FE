@@ -6,7 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import { ReactComponent as Select } from '../../assets/images/FilterSelect.svg';
 import { ImageDrop } from 'quill-image-drop-module';
 import axios from 'axios';
-import ImageResize from '@looop/quill-image-resize-module-react'
+import ImageResize from '@looop/quill-image-resize-module-react';
 
 // 전역 스코프에 Quill 인스턴스 등록
 window.Quill = Quill;
@@ -282,7 +282,6 @@ CreatePost.modules = {
       { indent: '+1' },
     ],
     ['link', 'image', 'video'],
-
   ],
   imageDrop: true,
 

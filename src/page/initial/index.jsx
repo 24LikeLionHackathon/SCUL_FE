@@ -49,7 +49,7 @@ const Initial = () => {
   const checkNicknameUnique = async (nickname) => {
     try {
       const response = await axios.get(
-        `/user/check-nickname?nickname=${nickname}`
+        `/api/user/check-nickname?nickname=${nickname}`
       );
       console.log('반환', response.data);
       setIsUnique(!response.data); // 반대로 설정 (true -> false, false -> true)
@@ -108,7 +108,7 @@ const Initial = () => {
     console.log('스포츠', selectedButtons);
     try {
       // 사용자 정보를 제출합니다.
-      const response = await axios.post('/auth/join/submit-info', {
+      const response = await axios.post('/api/auth/join/submit-info', {
         gender,
         age,
         nickname,
@@ -151,7 +151,6 @@ const Initial = () => {
         {showError && !isUnique && (
           <div className="message">이미 존재하는 닉네임입니다.</div>
         )}
-        {console.log('중간콘솔 : ', inputClass)}
         {showError && isUnique && inputClass === 'success' && (
           <div className="successMessage">사용 가능한 닉네임입니다.</div>
         )}

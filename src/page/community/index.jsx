@@ -406,7 +406,7 @@ const Community = () => {
     const sportsName = selectedSports?.name || '';
 
     try {
-      const response = await axios.post('/posts/list', {
+      const response = await axios.post('/api/posts/list', {
         sportsName,
         boardName,
         tagName: selectedTag,

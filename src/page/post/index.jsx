@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
 import { ReactComponent as ViewsIcon } from '../../assets/images/ViewsIcon.svg';
 import { ReactComponent as LikesIcon_Red } from '../../assets/images/LikesIcon_Red.svg';
 import { ReactComponent as ChatIcon } from '../../assets/images/ChatIcon.svg';
@@ -10,6 +9,7 @@ import { ReactComponent as PostImg } from '../../assets/images/PostImg.svg';
 import { ReactComponent as PostNoImg } from '../../assets/images/PostNoImg.svg';
 import { ReactComponent as LikesIcon } from '../../assets/images/LikesIcon.svg';
 import { ReactComponent as GreenCheckIcon } from '../../assets/images/GreenCheckIcon.svg';
+import axios from 'axios';
 
 //시간 나타내는 폼
 const timeForm = (date) => {
@@ -485,51 +485,46 @@ const ReportModal = ({ toggleReportModal, nickname, content }) => {
 
 const Post = () => {
   const nav = useNavigate();
-  const { sport, board } = useParams();
-  const [mockPost, setMockPost] = useState({
-    id: 8,
-    tag: '대회',
-    title: '제목입니당',
-    createdAt: '2024-07-01T12:00:00Z',
-    likes: 10,
-    views: 100,
-    comments: 3,
-    content: '집가서 후다닥 에어컨 설치하고 잠 한 판 때리고 싶습니다',
-    nickname: '도라산너구리',
-    profileImg: '',
-    comment: [
-      {
-        id: 1,
-        picture: '',
-        nickname: '도라산너구리',
-        content: '댓글내용입니다만여기까지가스무글자입니다여기부터오버',
-        createdAt: '2024-07-12T12:00:00Z',
-      },
-      {
-        id: 2,
-        picture: '',
-        nickname: '스트로베리',
-        content: '댓글을 달았습니다',
-        createdAt: '2024-07-19T12:00:00Z',
-      },
-      {
-        id: 3,
-        picture: '',
-        nickname: '고양이',
-        content: '앙냥냥',
-        createdAt: '2024-07-29T12:00:00Z',
-      },
-    ],
-  });
+  const { sport, board, postId } = useParams(); // Extract parameters from URL에서 가져옵니다
+  const [postData, setPostData] = useState(null);
   const [isLike, setIsLike] = useState(false);
   const [isFollow, setIsFollow] = useState(false);
   const [modal, setModal] = useState(false);
   const [modalReport, setModalReport] = useState(false);
   const [reportInfo, setReportInfo] = useState({ nickname: '', content: '' });
-  const currentUserNickname = '스트로베리'; //임시 현재유저닉네임
+  const currentUserNickname = '스트로베리'; // 임시 현재 유저 닉네임
 
-  const boardName =
-    board === 'free' ? '자유' : board === 'review' ? '후기' : '정보';
+  // Log postId to check if it is being extracted correctly
+  useEffect(() => {
+    console.log('postId:', postId);
+  }, [postId]);
+
+  // Fetch post data
+  useEffect(() => {
+    const fetchPostData = async () => {
+      if (postId) {
+        // Ensure postId is defined before making the API call
+        try {
+          const response = await axios.get(`/api/post/${postId}`);
+          console.log('Post data:', response.data); // Log the response data
+          setPostData(response.data);
+        } catch (error) {
+          console.error('Failed to fetch post data:', error);
+        }
+      } else {
+        console.error('Post ID is not defined');
+      }
+    };
+
+    fetchPostData();
+  }, [postId]);
+  const boardName = postData
+    ? postData.boardName === 'free'
+      ? '자유'
+      : postData.boardName === 'review'
+      ? '후기'
+      : '정보'
+    : '';
 
   const handlePostReviseClick = () => {
     const baseUrl = window.location.origin;
@@ -560,15 +555,17 @@ const Post = () => {
     setIsFollow(!isFollow);
   };
 
-  const toggleLikes = () => {
-    setIsLike(!isLike);
-    if (isLike === false) {
-      mockPost.likes += 1;
-      return;
-    }
-    if (isLike === true) {
-      mockPost.likes -= 1;
-      return;
+  const toggleLikes = async () => {
+    try {
+      setIsLike(!isLike);
+      const likeChange = isLike ? -1 : 1;
+      await axios.post(`/api/post/${postId}/like`, { change: likeChange }); // 실제 API 엔드포인트에 맞게 수정
+      setPostData((prevData) => ({
+        ...prevData,
+        likeCount: prevData.likeCount + likeChange,
+      }));
+    } catch (error) {
+      console.error('좋아요 업데이트 오류:', error);
     }
   };
 
@@ -590,42 +587,37 @@ const Post = () => {
     window.location.href = redirectUrl;
   };
 
-  //댓글 수정
-  const updateComment = (updatedContent, commentIndex) => {
-    setMockPost((prevPost) => {
-      const updatedComments = [...prevPost.comment];
-      updatedComments[commentIndex] = {
-        ...updatedComments[commentIndex],
-        content: updatedContent,
-        createdAt: new Date().toISOString(),
-      };
-      return {
-        ...prevPost,
-        comment: updatedComments,
-      };
-    });
+  const updateComment = async (updatedContent, commentIndex) => {
+    try {
+      await axios.put(
+        `/api/post/${postId}/comment/${postData.comments[commentIndex].id}`,
+        { content: updatedContent }
+      );
+      setPostData((prevPost) => {
+        const updatedComments = [...prevPost.comments];
+        updatedComments[commentIndex] = {
+          ...updatedComments[commentIndex],
+          content: updatedContent,
+          createdAt: new Date().toISOString(),
+        };
+        return {
+          ...prevPost,
+          comments: updatedComments,
+        };
+      });
+    } catch (error) {
+      console.error('댓글 수정 오류:', error);
+    }
   };
 
-  //최신순배열
   const filteredPosts = mockPosts
     .filter((post) => post.board === boardName)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  //   // 이전글 및 다음글 찾기
-  //   let previousPost = null;
-  //   let nextPost = null;
 
-  //   filteredPosts.forEach((post) => {
-  //     if (post.id < mockPost.id && (!previousPost || post.id > previousPost.id)) {
-  //       previousPost = post;
-  //     }
-  //     if (post.id > mockPost.id && (!nextPost || post.id < nextPost.id)) {
-  //       nextPost = post;
-  //     }
-  //   });
+  const className = `${modalReport ? 'report-modal-back' : ''}`;
 
-  //   // 표시할 게시글 목록
-  //   const displayPosts = [previousPost, nextPost].filter((post) => post !== null);
+  if (!postData) return <div>Loading...</div>; // 데이터 로딩 중일 때 표시할 컴포넌트
 
   return (
     <div className="Post">
@@ -638,27 +630,24 @@ const Post = () => {
             {boardName === '자유' ? (
               ''
             ) : (
-              <div className="post-tag">{mockPost.tag}</div>
+              <div className="post-tag">{postData.tagName}</div>
             )}
-            <div className="post-title">{mockPost.title}</div>
+            <div className="post-title">{postData.postTitle}</div>
           </div>
           <div className="post-title-2">
-            <button
-              className="post-profile_btn"
-              onClick={() => nav(`/mypage/${mockPost.nickname}`)}
-            >
-              {mockPost.profileImg ? (
+            <button className="post-profile_btn" onClick={() => nav('/myPage')}>
+              {postData.profileImg ? (
                 <img
-                  src={mockPost.profileImg}
-                  alt={mockPost.title}
+                  src={postData.profileImg}
+                  alt={postData.postTitle}
                   className="post-profileImg"
                 />
               ) : (
                 <DefaultProfile className="post-profileImg" />
               )}
-              <span className="post-nickname"> {mockPost.nickname}</span>
+              <span className="post-nickname"> {postData.nickname}</span>
             </button>
-            {mockPost.nickname === currentUserNickname ? (
+            {postData.nickname === currentUserNickname ? (
               ''
             ) : (
               <button className="post-follow" onClick={toggleFollows}>
@@ -666,14 +655,14 @@ const Post = () => {
               </button>
             )}
 
-            <span className="post-time">{timeForm(mockPost.createdAt)}</span>
+            <span className="post-time">{timeForm(postData.createdAt)}</span>
             <span className="post-views">
-              · <ViewsIcon className="viewIcon" /> {mockPost.views}
+              · <ViewsIcon className="viewIcon" /> {postData.postView}
             </span>
           </div>
         </div>
 
-        <div className="post-content">{mockPost.content}</div>
+        <div className="post-content">{postData.postContent}</div>
 
         {modal && <Modal />}
         {modalReport && (
@@ -693,16 +682,16 @@ const Post = () => {
                 <LikesIcon_Red className="likes-redIcon" />
               )}
               <span className="likes1">좋아요</span>
-              <span className="likes2">{mockPost.likes}</span>
+              <span className="likes2">{postData.likeCount}</span>
             </button>
             <span className="post-comments-num">
               <ChatIcon className="chatIcon" />
               <span className="comments1">댓글</span>
-              <span className="comments2">{mockPost.comments}</span>
+              <span className="comments2">{postData.comments.length}</span>
             </span>
           </div>
           <div className="post-btn2">
-            {mockPost.nickname === currentUserNickname ? (
+            {postData.nickname === currentUserNickname ? (
               <>
                 <button onClick={handlePostReviseClick}>수정</button>|
                 <button>삭제</button>|
@@ -711,7 +700,7 @@ const Post = () => {
               <>
                 <button
                   onClick={() =>
-                    toggleReportModal(mockPost.nickname, mockPost.title)
+                    toggleReportModal(postData.nickname, postData.postTitle)
                   }
                 >
                   신고
@@ -727,9 +716,9 @@ const Post = () => {
       </div>
       <div className="post-comment">
         <h1>댓글</h1>
-        {mockPost.comment.map((comment, index) => (
+        {postData.comments.map((comment) => (
           <Comment
-            key={index}
+            key={comment.id}
             picture={comment.picture}
             nickname={comment.nickname}
             content={comment.content}
@@ -739,8 +728,9 @@ const Post = () => {
             toggleReportModal={() =>
               toggleReportModal(comment.nickname, comment.content)
             }
-            commentIndex={index}
-            updateComment={updateComment}
+            updateComment={(updatedContent) =>
+              updateComment(updatedContent, comment.id)
+            }
           />
         ))}
         <div className="create-post-comment">
@@ -748,7 +738,7 @@ const Post = () => {
           <div className="add-post-comment">
             <textarea
               placeholder="댓글을 입력해 주세요"
-              maxlength="326"
+              maxLength="326"
               className="post-comment-input"
             ></textarea>
             <button className="post-comment-submit">등록</button>
