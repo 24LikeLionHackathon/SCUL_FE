@@ -101,11 +101,11 @@ const Header = () => {
   }, [token]);
 
   const goHome = () => {
-    navigate(`/main/${selectedSport.englishName.toLowerCase()}`);
+    navigate(`/main}`);
   };
 
-  const handleNavigate = (id) => {
-    navigate(`/auth/${id}`);
+  const handleNavigate = () => {
+    navigate(`/auth`);
   };
 
   const logout = () => {
@@ -315,8 +315,8 @@ const Header = () => {
             </li>
           ) : (
             <li className="header-nav-list">
-              <div onClick={handleNavigate(0)}>로그인</div> /
-              <div onClick={handleNavigate(1)}>회원가입</div>
+              <div onClick={handleNavigate()}>로그인</div> /
+              <div onClick={handleNavigate()}>회원가입</div>
             </li>
           )}
         </ul>
