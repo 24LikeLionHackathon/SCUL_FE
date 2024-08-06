@@ -20,7 +20,7 @@ const Auth = () => {
       const fetchTokens = async () => {
         try {
           const res = await axios.get(
-            `api/oauth2/${storedProvider}?code=${code}`
+            `/api/oauth2/${storedProvider}?code=${code}`
           );
           const { access_token, refresh_token, is_member } = res.data;
           if (access_token && refresh_token) {
