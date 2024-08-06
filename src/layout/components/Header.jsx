@@ -51,7 +51,7 @@ const sportIcons = {
 
 const Header = () => {
   const navigate = useNavigate();
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [notifications, setNotifications] = useState(false);
   const [sports, setSports] = useState([]);
