@@ -108,11 +108,11 @@ const Initial = () => {
     console.log('스포츠', selectedButtons);
     try {
       // 사용자 정보를 제출합니다.
-      const response = await axios.post('/auth/join/submit-info', {
+      const response = await axios.post('/api/auth/join/submit-info', {
         gender,
         age,
         nickname,
-        sportsName: selectedButtons,
+        sports_name: selectedButtons,
       });
       // 백엔드에서 토큰을 처리하고 메인 페이지로 리다이렉트합니다.
       const { access_token, refresh_token } = response.data;
