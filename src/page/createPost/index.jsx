@@ -24,7 +24,6 @@ const boardNameMapping = {
   '후기 게시판': 'review',
   '자유 게시판': 'free',
   '정보 게시판': 'info',
-  '문의 / 신고': 'inquiry',
 };
 
 const CreatePost = () => {
@@ -75,17 +74,6 @@ const CreatePost = () => {
       case '후기 게시판':
         setOptions(['소모임', '용품', '시설', '운동']);
         setIsOptionDisabled(false);
-        break;
-      case '문의 / 신고':
-        setOptions([
-          '신고',
-          '문의하기',
-          '중복 게시 건의',
-          '게시판 개선 건의',
-          '분류 추가 건의',
-        ]);
-        setIsOptionDisabled(false);
-        alert('문의 / 신고 게시판은 관리자만 조회 할 수 있습니다');
         break;
       case '정보 게시판':
         setOptions(['대회', '경기 결과', '경기 일정']);
@@ -153,16 +141,6 @@ const CreatePost = () => {
               break;
             case '후기 게시판':
               setOptions(['소모임', '용품', '시설', '운동']);
-              break;
-            case '문의 / 신고':
-              setOptions([
-                '신고',
-                '문의하기',
-                '중복 게시 건의',
-                '게시판 개선 건의',
-                '분류 추가 건의',
-              ]);
-              alert('문의 / 신고 게시판은 관리자만 조회 할 수 있습니다');
               break;
             case '정보 게시판':
               setOptions(['대회', '경기 결과', '경기 일정']);
@@ -316,9 +294,6 @@ const CreatePost = () => {
                 </div>
                 <div onClick={() => handleBoardSelect('정보 게시판')}>
                   정보 게시판
-                </div>
-                <div onClick={() => handleBoardSelect('문의 / 신고')}>
-                  문의 / 신고
                 </div>
               </div>
             )}

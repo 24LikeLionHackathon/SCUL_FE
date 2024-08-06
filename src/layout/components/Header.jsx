@@ -94,6 +94,7 @@ const Header = () => {
   }, []);
 
   const token = localStorage.getItem('accessToken');
+  const userNickname = localStorage.getItem('userNickname');
   useEffect(() => {
     if (token) {
       setLoggedIn(true);
@@ -101,7 +102,7 @@ const Header = () => {
   }, [token]);
 
   const goHome = () => {
-    navigate(`/main}`);
+    navigate(`/main`);
   };
 
   const handleNavigate = () => {
@@ -294,7 +295,7 @@ const Header = () => {
               </div>
               <ul className="header-nav-profile-dropdown-list-container">
                 <li className="header-nav-profile-dropdown-list">
-                  <div onClick={() => navigate('/mypage')}>
+                  <div onClick={() => navigate(`/mypage/${userNickname}`)}>
                     <MyPage />
                     마이 페이지
                   </div>

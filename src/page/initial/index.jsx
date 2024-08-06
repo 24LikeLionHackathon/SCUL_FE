@@ -121,6 +121,7 @@ const Initial = () => {
       localStorage.setItem('accessToken', access_token);
       localStorage.setItem('refreshToken', refresh_token);
       localStorage.setItem('userId', response.data.userId);
+      localStorage.setItem('userName', response.data.userNickname);
       console.log(response.data);
       // 메인 페이지로 이동
       navigate('/main');
