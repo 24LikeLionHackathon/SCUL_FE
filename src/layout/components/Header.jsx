@@ -315,8 +315,8 @@ const Header = () => {
             </li>
           ) : (
             <li className="header-nav-list">
-              <div onClick={handleNavigate()}>로그인</div> /
-              <div onClick={handleNavigate()}>회원가입</div>
+              <div onClick={handleNavigate}>로그인</div> /
+              <div onClick={handleNavigate}>회원가입</div>
             </li>
           )}
         </ul>
