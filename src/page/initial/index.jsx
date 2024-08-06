@@ -108,7 +108,7 @@ const Initial = () => {
     console.log('스포츠', selectedButtons);
     try {
       // 사용자 정보를 제출합니다.
-      const response = await axios.post('/api/auth/join/submit-info', {
+      const response = await axios.post('/auth/join/submit-info', {
         gender,
         age,
         nickname,
