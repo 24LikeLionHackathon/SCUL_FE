@@ -112,7 +112,7 @@ const Initial = () => {
         gender,
         age,
         nickname,
-        sports_name: selectedButtons,
+        sportsName: selectedButtons,
       });
       // 백엔드에서 토큰을 처리하고 메인 페이지로 리다이렉트합니다.
       const { access_token, refresh_token } = response.data;

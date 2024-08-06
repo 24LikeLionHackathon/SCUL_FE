@@ -539,7 +539,7 @@ const Post = () => {
   const handlePostDelete = async () => {
     const accessToken = localStorage.getItem('accessToken');
     try {
-      await axios.delete(`/posts/${post_id}`, {
+      await axios.delete(`/api/posts/${post_id}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`, // 인증 토큰 포함

@@ -686,7 +686,7 @@ const Activity = () => {
   const fetchActivityData = async () => {
     try {
       const response = await axios.get(
-        `/mypage/activity/${selectedTagEnglish}?page=${currentPage}&&userNickname=${username}`,
+        `api/mypage/activity/${selectedTagEnglish}?page=${currentPage}&&userNickname=${username}`,
         {
           headers: {
             'Content-Type': 'multipart/form-data',
